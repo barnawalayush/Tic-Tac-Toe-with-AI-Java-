@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Main {
 
-    private static int move = 0;
+    private static int move = 0;  // move == 0 --> X turn;   move == 1 --> O turn;
 
     public static void main(String[] args) {
 
@@ -31,49 +31,91 @@ public class Main {
 
     private static void takeUserInput(Scanner sc, int[][] board) {
 
-        while(true){
-            String str = sc.nextLine();
-//            String str1 = sc.next();
-//            String str2 = sc.next();
-            try{
-                int n1=0, n2=0;
+        int count=0;           // To count number of input tokens
+        boolean check1 = true; // To keep the record of the entered incorrect number to avoid double printing
+        boolean check2 = true; // To keep the record of the entered incorrect word to avoid double printing
+        boolean first = true;  // To instantiate x and y coordinate correspondingly
+        int x_coordinate = -1, y_coordinate = -1;
+        boolean check=true;    // To handle the situation in which if user input like "one"
 
-                String temp = "";
-                for(int i=0; i<str.length(); i++){
-                    if(" ".equals(str.charAt(i))){
-                        i++;
-                        n1 = Integer.parseInt(temp);
-                        temp = "";
-                    }
-                    temp += str.charAt(i);
-                }
-                n2 = Integer.parseInt(temp);
-//                String[] st = str.split(" ");
-//                n1 = Integer.parseInt(st[0]);
-//                n2 = Integer.parseInt(st[1]);
-//                int n1 = Integer.parseInt(str1);
-//                int n2 = Integer.parseInt(str2);
-                if(n1<1 || n1>3 || n2<1 || n2>3){
-                    System.out.println("Coordinates should be from 1 to 3!");
-                    System.out.print("Enter the coordinates:");
-                    continue;
-                }
-                if(board[n1-1][n2-1] != 0){
-                    System.out.println("This cell is occupied! Choose another one!");
-                    System.out.print("Enter the coordinates:");
-                    continue;
-                }
-                if(move == 0)board[n1-1][n2-1] = 1;
-                else board[n1-1][n2-1] = -1;
-                move = 1-move;
-                break;
+        while(count != 2){
+            String str = sc.next();
+            int n = 0;
+
+            if(!check & first){
+                check2 = true;
+                check = true;
+            }
+
+            try{
+                n = Integer.parseInt(str);
             }
             catch (NumberFormatException e){
-                System.out.println("You should enter numbers!");
-                System.out.print("Enter the coordinates:");
-                continue;
+                if(check2){
+                    System.out.println("You should enter numbers!");
+                    System.out.print("Enter the coordinates:");
+                    if(first){
+                        check = false;
+                        check2 = false;
+                    }
+                    first = true;
+                    count=0;
+                    continue;
+                }else{
+                    check = true;
+                    check2 = true;
+                    continue;
+                }
             }
-        }
+
+            if(n<1 || n>3) {
+                if(check1){
+                    System.out.println("Coordinates should be from 1 to 3!");
+                    System.out.print("Enter the coordinates:");
+                    if(first)check1 = false;
+                    first = true;
+                    count=0;
+                    continue;
+                }else{
+                    check1 = true;
+                    continue;
+                }
+
+            }else{
+                if(check1 && check2){
+                    if(first){
+                        first=false;
+                        x_coordinate = n;
+                        count++;
+                    }else{
+                        count++;
+                        y_coordinate = n;
+                        first = true;
+                    }
+                }else{
+                    check1=true;
+                    check2 = true;
+                }
+            }
+
+            if(count==2){
+                if(board[x_coordinate-1][y_coordinate-1] != 0){
+                    System.out.println("This cell is occupied! Choose another one!");
+                    System.out.print("Enter the coordinates:");
+                    count=0;
+                    first = true;
+                    continue;
+                }else{
+                    break;
+                }
+
+            }
+
+        };
+
+        if(move == 0)board[x_coordinate-1][y_coordinate-1] = 1;
+        else board[x_coordinate-1][y_coordinate-1] = -1;
+        move = 1-move;
 
     }
 
@@ -96,11 +138,16 @@ public class Main {
     private static void update_array(int[][] board, String str) {
 
         int x1=0,y1=0;
+        int no_of_x = 0, no_of_o = 0;
 
         for(int i=0; i<str.length(); i++){
             if(str.charAt(i) == 'X') {
+                no_of_x++;
                 board[x1][y1] = 1;
-            }else if(str.charAt(i) == 'O') board[x1][y1] = -1;
+            }else if(str.charAt(i) == 'O'){
+                no_of_o++;
+                board[x1][y1] = -1;
+            }
             y1++;
 
             if(i%3==2) {
@@ -110,6 +157,7 @@ public class Main {
             }
         }
 
+        if(no_of_x > no_of_o) move = 1-move;
     }
 
     private static void checkWinner(int[][] arr) {
@@ -127,54 +175,54 @@ public class Main {
         if(arr[0][0] == 1 && arr[0][1] == 1 && arr[0][2] == 1){
             x_wins = true;
         }
-        if(arr[0][0] == 0 && arr[0][1] == 0 && arr[0][2] == 0){
+        if(arr[0][0] == -1 && arr[0][1] == -1 && arr[0][2] == -1){
             o_wins = true;
         }
         if(arr[1][0] == 1 && arr[1][1] == 1 && arr[1][2] == 1){
             x_wins = true;
         }
-        if(arr[1][0] == 0 && arr[1][1] == 0 && arr[1][2] == 0){
+        if(arr[1][0] == -1 && arr[1][1] == -1 && arr[1][2] == -1){
             o_wins = true;
         }
         if(arr[2][0] == 1 && arr[2][1] == 1 && arr[2][2] == 1){
             x_wins = true;
         }
-        if(arr[2][0] == 0 && arr[2][1] == 0 && arr[2][2] == 0){
+        if(arr[2][0] == -1 && arr[2][1] == -1 && arr[2][2] == -1){
             o_wins = true;
         }
         if(arr[0][0] == 1 && arr[1][0] == 1 && arr[2][0] == 1){
             x_wins = true;
         }
-        if(arr[0][0] == 0 && arr[1][0] == 0 && arr[2][0] == 0){
+        if(arr[0][0] == -1 && arr[1][0] == -1 && arr[2][0] == -1){
             o_wins = true;
         }
         if(arr[0][1] == 1 && arr[1][1] == 1 && arr[2][1] == 1){
             x_wins = true;
         }
-        if(arr[0][1] == 0 && arr[1][1] == 0 && arr[2][1] == 0){
+        if(arr[0][1] == -1 && arr[1][1] == -1 && arr[2][1] == -1){
             o_wins = true;
         }
         if(arr[0][2] == 1 && arr[1][2] == 1 && arr[2][2] == 1){
             x_wins = true;
         }
-        if(arr[0][2] == 0 && arr[1][2] == 0 && arr[2][2] == 0){
+        if(arr[0][2] == -1 && arr[1][2] == -1 && arr[2][2] == -1){
             o_wins = true;
         }
         if(arr[0][0] == 1 && arr[1][1] == 1 && arr[2][2] == 1){
             x_wins = true;
         }
-        if(arr[0][0] == 0 && arr[1][1] == 0 && arr[2][2] == 0){
+        if(arr[0][0] == -1 && arr[1][1] == -1 && arr[2][2] == -1){
             o_wins = true;
         }
         if(arr[0][2] == 1 && arr[1][1] == 1 && arr[2][0] == 1){
             x_wins = true;
         }
-        if(arr[0][2] == 0 && arr[1][1] == 0 && arr[2][0] == 0){
+        if(arr[0][2] == -1 && arr[1][1] == -1 && arr[2][0] == -1){
             o_wins = true;
         }
 
-        if(x_wins) System.out.println("X Wins");
-        else if(o_wins) System.out.println("O Wins");
+        if(x_wins) System.out.println("X wins");
+        else if(o_wins) System.out.println("O wins");
         else if(total_moves != 9) System.out.println("Game not finished");
         else System.out.println("Draw");
     }

@@ -103,8 +103,8 @@ files:
       }
     learner_created: false
 feedback_link: https://hyperskill.org/learn/step/7434#comment
-status: Failed
+status: Solved
 feedback:
-  message: Execution failed
-  time: "Wed, 24 Jan 2024 17:54:30 UTC"
-record: -1
+  message: Congratulations!
+  time: "Fri, 26 Jan 2024 06:30:51 UTC"
+record: 1
