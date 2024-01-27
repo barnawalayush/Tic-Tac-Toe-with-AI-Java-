@@ -1,6 +1,7 @@
 package tictactoe;
 
 import java.sql.SQLOutput;
+import java.util.Comparator;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -11,7 +12,9 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-        System.out.println();
+        System.out.print("Input command:");
+
+        int command = takeInputCommand(sc);
 
         String str = "_________";
         int[][] board = new int[3][3];
@@ -20,6 +23,74 @@ public class Main {
 
         show_current_board_status(board);
 
+        if(command == Constants.START_EASY_EASY){
+            playEayEasy(board, sc);
+        }else if(command == Constants.START_EASY_USER){
+            playEasyUser(board, sc);
+        }else if(command == Constants.START_USER_USER){
+            playUserUser(board, sc);
+        }else if(command == Constants.START_USER_EASY){
+            playUserEasy(board, sc);
+        }else if(command == 0)return;
+
+    }
+
+    private static int takeInputCommand(Scanner sc) {
+
+        String player1 = null, player2 = null;
+
+        while(true){
+            String str = sc.nextLine();
+
+            if(str.equals("exit"))return 0;
+
+            int cnt=0;
+            String s1 = "";
+            int i=0;
+            while(i<str.length()){
+                while(i<str.length() && str.charAt(i) != ' '){
+                    s1 += str.charAt(i);
+                    i++;
+                }
+                while(i<str.length() && str.charAt(i) == ' ')i++;
+
+                if(cnt == 0){
+                    cnt++;
+                    s1 = "";
+                    continue;
+                }
+                else if(cnt == 1){
+                    cnt++;
+                    player1 = s1;
+                    s1 = "";
+                }
+                else if(cnt == 2){
+                    cnt++;
+                    player2 = s1;
+                }
+            }
+
+            if(cnt == 3)break;
+            else{
+                System.out.println("Bad parameters!");
+                System.out.print("Input command:");
+                continue;
+            }
+        }
+
+        if(player1.equals("easy")){
+            if(player2.equals("user"))return Constants.START_EASY_USER;
+            else if(player2.equals("easy"))return Constants.START_EASY_EASY;
+        }else if(player1.equals("user")){
+            if(player2.equals("user"))return Constants.START_USER_USER;
+            else if(player2.equals("easy"))return Constants.START_USER_EASY;
+        }
+
+        return 0;
+
+    }
+
+    private static void playUserEasy(int[][] board, Scanner sc) {
         boolean b = false;
         while(!b){
 
@@ -29,19 +100,81 @@ public class Main {
                 move = 1-move;
             }else{
                 System.out.println("Making move level \"easy\"");
-                takeCompuerInput(board);
+                takeComputerInput(board, move);
                 move = 1-move;
             }
 
             show_current_board_status(board);
 
             b = checkWinner(board);
+        }
+    }
 
+    private static void playEayEasy(int[][] board, Scanner sc) {
+
+        boolean b = false;
+        while(!b){
+
+            if(move == 0){
+                System.out.println("Making move level \"easy\"");
+                takeComputerInput(board, move);
+                move = 1-move;
+            }else{
+                System.out.println("Making move level \"easy\"");
+                takeComputerInput(board, move);
+                move = 1-move;
+            }
+
+            show_current_board_status(board);
+
+            b = checkWinner(board);
         }
 
     }
 
-    private static void takeCompuerInput(int[][] board) {
+    private static void playEasyUser(int[][] board, Scanner sc) {
+
+        boolean b = false;
+        while(!b){
+
+            if(move == 0){
+                System.out.println("Making move level \"easy\"");
+                takeComputerInput(board, move);
+                move = 1-move;
+            }else{
+                System.out.print("Enter the coordinates:");
+                takeUserInput(sc, board);
+                move = 1-move;
+            }
+
+            show_current_board_status(board);
+
+            b = checkWinner(board);
+        }
+    }
+
+    private static void playUserUser(int[][] board, Scanner sc) {
+        boolean b = false;
+        while(!b){
+
+            if(move == 0){
+                System.out.print("Enter the coordinates:");
+                takeUserInput(sc, board);
+                move = 1-move;
+            }else{
+                System.out.print("Enter the coordinates:");
+                takeUserInput(sc, board);
+                move = 1-move;
+            }
+
+            show_current_board_status(board);
+
+            b = checkWinner(board);
+        }
+
+    }
+
+    private static void takeComputerInput(int[][] board, int move) {
 
         Random r = new Random();
 
@@ -53,7 +186,9 @@ public class Main {
             if(board[computer_x_coordinate-1][computer_y_coordinate-1] != 0){
                 continue;
             }else{
-                board[computer_x_coordinate-1][computer_y_coordinate-1] = -1;
+                if(move == 0)
+                board[computer_x_coordinate-1][computer_y_coordinate-1] = 1;
+                else board[computer_x_coordinate-1][computer_y_coordinate-1] = -1;
                 break;
             }
         }
