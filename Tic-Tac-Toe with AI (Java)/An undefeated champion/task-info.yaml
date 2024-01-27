@@ -374,6 +374,28 @@ files:
           }
       }
     learner_created: false
+  - name: src/tictactoe/Constants.java
+    visible: true
+    text: |
+      package tictactoe;
+      
+      public final class Constants {
+      
+          final static public int START_EASY_EASY = 1;
+          final static public int START_EASY_USER = 2;
+          final static public int START_USER_USER = 3;
+          final static public int START_USER_EASY = 4;
+          final static public int START_USER_MEDIUM = 5;
+          final static public int START_MEDIUM_USER = 6;
+          final static public int START_EASY_MEDIUM = 7;
+      
+      
+      }
+    learner_created: true
 feedback_link: https://hyperskill.org/learn/step/7438#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">Hyperskill</a>
+    to continue learning.
+  time: "Sat, 27 Jan 2024 21:44:54 UTC"
 record: -1

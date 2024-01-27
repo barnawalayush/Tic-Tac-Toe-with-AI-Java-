@@ -8,6 +8,9 @@ import java.util.Scanner;
 public class Main {
 
     private static int move = 0;  // move == 0 --> X turn;   move == 1 --> O turn;
+    private static boolean X_WINS = false;
+    private static boolean O_WINS = false;
+    private static boolean DRAW = false;
 
     public static void main(String[] args) {
 
@@ -21,7 +24,7 @@ public class Main {
 
         update_array(board, str);
 
-        show_current_board_status(board);
+        if(command != Constants.START_USER_HARD && command != Constants.START_HARD_USER && command != Constants.START_HARD_HARD) show_current_board_status(board);
 
         if(command == Constants.START_EASY_EASY){
             playEayEasy(board, sc);
@@ -37,8 +40,164 @@ public class Main {
             playMediumUser(board, sc);
         }else if(command == Constants.START_EASY_MEDIUM){
             playEasyMedium(board, sc);
+        }else if(command == Constants.START_HARD_USER){
+            playHardUser(board, sc);
+        }else if(command == Constants.START_USER_HARD){
+            playUserHard(board, sc);
+        }else if(command == Constants.START_HARD_HARD){
+            playHardHard(board, sc);
         }else if(command == 0)return;
 
+    }
+
+    private static void playUserHard(int[][] board, Scanner sc) {
+
+        boolean b = false;
+        while(!b){
+
+            if(move == 0){
+                System.out.print("Enter the coordinates:");
+                takeUserInput(sc, board);
+                move = 1-move;
+            }else{
+                System.out.println("Making move level \"hard\"");
+                takeComputerHardInput(board, move);
+                move = 1-move;
+            }
+
+            show_current_board_status(board);
+
+            b = checkWinner(board);
+        }
+    }
+
+    private static void takeComputerHardInput(int[][] board, int turn) {
+
+        int bestScore = Integer.MIN_VALUE;
+        int[] moves = new int[2];
+        for(int i=0; i<3; i++){
+            for(int j=0; j<3; j++){
+                if(board[i][j] == 0){
+                    board[i][j] = turn==0?1:-1;
+                    int score = minimax(board, 0, false, 1-turn);
+                    board[i][j] = 0;
+                    if(score > bestScore){
+                        bestScore = score;
+                        moves = new int[] {i, j};
+                    }
+                }
+            }
+        }
+        board[moves[0]][moves[1]] = turn==0?1:-1;
+    }
+
+    private static int minimax(int[][] board, int depth, boolean isMaximising, int turn) {
+        int result = analyzeWinner(board);
+        if(result == 1){
+            if(move == 0){
+                return 1;
+            }else return -1;
+        }else if(result == -1){
+            if(move == 0){
+                return -1;
+            }else return 1;
+        }else if(result == 0)return 0;
+
+        if(isMaximising){
+            int bestScore = Integer.MIN_VALUE;
+            for(int i=0; i<3; i++){
+                for(int j=0; j<3; j++){
+                    if(board[i][j] == 0){
+                        board[i][j] = turn==0?1:-1;
+                        int score = minimax(board, depth+1, false, 1-turn);
+                        board[i][j] = 0;
+                        if(score > bestScore){
+                            bestScore = score;
+                        }
+                    }
+                }
+            }
+            return bestScore;
+        }else{
+            int bestScore = Integer.MAX_VALUE;
+            for(int i=0; i<3; i++){
+                for(int j=0; j<3; j++){
+                    if(board[i][j] == 0){
+                        board[i][j] = turn==0?1:-1;
+                        int score = minimax(board, depth+1, true, 1-turn);
+                        board[i][j] = 0;
+                        if(score < bestScore){
+                            bestScore = score;
+                        }
+                    }
+                }
+            }
+            return bestScore;
+        }
+    }
+
+    private static void playHardUser(int[][] board, Scanner sc) {
+
+        boolean b = false;
+        while(!b){
+
+            if(move == 0){
+                System.out.println("Making move level \"hard\"");
+                takeComputerHardInput(board, move);
+                move = 1-move;
+            }else{
+                //show_current_board_status(board);
+                System.out.print("Enter the coordinates:");
+                takeUserInput(sc, board);
+                move = 1-move;
+            }
+
+            show_current_board_status(board);
+
+            b = checkWinner(board);
+        }
+    }
+
+    private static void playHardHard(int[][] board, Scanner sc) {
+
+        boolean b = false;
+        while(!b){
+
+            if(move == 0){
+                System.out.println("Making move level \"hard\"");
+                takeComputerHardInput(board, move);
+                move = 1-move;
+            }else{
+                System.out.println("Making move level \"hard\"");
+                takeComputerHardInput(board, move);
+                move = 1-move;
+            }
+
+            show_current_board_status(board);
+
+            b = checkWinner(board);
+        }
+    }
+
+    private static void playEasyUser(int[][] board, Scanner sc) {
+
+        boolean b = false;
+        while(!b){
+
+            if(move == 0){
+                System.out.println("Making move level \"easy\"");
+                takeComputerEasyInput(board, move);
+                move = 1-move;
+            }else{
+                System.out.print("Enter the coordinates:");
+                takeUserInput(sc, board);
+                move = 1-move;
+            }
+
+            show_current_board_status(board);
+
+            b = checkWinner(board);
+        }
     }
 
     private static void playUserMedium(int[][] board, Scanner sc) {
@@ -153,8 +312,12 @@ public class Main {
             if(player2.equals("user")) return Constants.START_USER_USER;
             else if(player2.equals("easy")) return Constants.START_USER_EASY;
             else if(player2.equals("medium")) return Constants.START_USER_MEDIUM;
+            else if(player2.equals("hard")) return Constants.START_USER_HARD;
         }else if(player1.equals("medium")){
             if(player2.equals("user")) return Constants.START_MEDIUM_USER;
+        }else if(player1.equals("hard")){
+            if(player2.equals("user")) return Constants.START_HARD_USER;
+            else if(player2.equals("hard")) return Constants.START_HARD_HARD;
         }
 
         return 0;
@@ -201,27 +364,6 @@ public class Main {
             b = checkWinner(board);
         }
 
-    }
-
-    private static void playEasyUser(int[][] board, Scanner sc) {
-
-        boolean b = false;
-        while(!b){
-
-            if(move == 0){
-                System.out.println("Making move level \"easy\"");
-                takeComputerEasyInput(board, move);
-                move = 1-move;
-            }else{
-                System.out.print("Enter the coordinates:");
-                takeUserInput(sc, board);
-                move = 1-move;
-            }
-
-            show_current_board_status(board);
-
-            b = checkWinner(board);
-        }
     }
 
     private static void playUserUser(int[][] board, Scanner sc) {
@@ -862,7 +1004,9 @@ public class Main {
 
             if(count==2){
                 if(board[x_coordinate-1][y_coordinate-1] != 0){
+                    //show_current_board_status(board);
                     System.out.println("This cell is occupied! Choose another one!");
+                    //show_current_board_status(board);
                     System.out.print("Enter the coordinates:");
                     count=0;
                     first = true;
@@ -936,94 +1080,172 @@ public class Main {
         if(arr[0][0] == 1 && arr[0][1] == 1 && arr[0][2] == 1){
             x_wins = true;
             System.out.println("X wins");
+            X_WINS = true;
             return true;
         }
         if(arr[0][0] == -1 && arr[0][1] == -1 && arr[0][2] == -1){
             o_wins = true;
             System.out.println("O wins");
+            O_WINS = true;
             return true;
         }
         if(arr[1][0] == 1 && arr[1][1] == 1 && arr[1][2] == 1){
             x_wins = true;
             System.out.println("X wins");
+            X_WINS = true;
             return true;
         }
         if(arr[1][0] == -1 && arr[1][1] == -1 && arr[1][2] == -1){
             o_wins = true;
             System.out.println("O wins");
+            O_WINS = true;
             return true;
         }
         if(arr[2][0] == 1 && arr[2][1] == 1 && arr[2][2] == 1){
             x_wins = true;
             System.out.println("X wins");
+            X_WINS = true;
             return true;
         }
         if(arr[2][0] == -1 && arr[2][1] == -1 && arr[2][2] == -1){
             o_wins = true;
             System.out.println("O wins");
+            O_WINS = true;
             return true;
         }
         if(arr[0][0] == 1 && arr[1][0] == 1 && arr[2][0] == 1){
             x_wins = true;
             System.out.println("X wins");
+            X_WINS = true;
             return true;
         }
         if(arr[0][0] == -1 && arr[1][0] == -1 && arr[2][0] == -1){
             o_wins = true;
             System.out.println("O wins");
+            O_WINS = true;
             return true;
         }
         if(arr[0][1] == 1 && arr[1][1] == 1 && arr[2][1] == 1){
             x_wins = true;
             System.out.println("X wins");
+            X_WINS = true;
             return true;
         }
         if(arr[0][1] == -1 && arr[1][1] == -1 && arr[2][1] == -1){
             o_wins = true;
             System.out.println("O wins");
+            O_WINS = true;
             return true;
         }
         if(arr[0][2] == 1 && arr[1][2] == 1 && arr[2][2] == 1){
             x_wins = true;
             System.out.println("X wins");
+            X_WINS = true;
             return true;
         }
         if(arr[0][2] == -1 && arr[1][2] == -1 && arr[2][2] == -1){
             o_wins = true;
             System.out.println("O wins");
+            O_WINS = true;
             return true;
         }
         if(arr[0][0] == 1 && arr[1][1] == 1 && arr[2][2] == 1){
             x_wins = true;
             System.out.println("X wins");
+            X_WINS = true;
             return true;
         }
         if(arr[0][0] == -1 && arr[1][1] == -1 && arr[2][2] == -1){
             o_wins = true;
             System.out.println("O wins");
+            O_WINS = true;
             return true;
         }
         if(arr[0][2] == 1 && arr[1][1] == 1 && arr[2][0] == 1){
             x_wins = true;
             System.out.println("X wins");
+            X_WINS = true;
             return true;
         }
         if(arr[0][2] == -1 && arr[1][1] == -1 && arr[2][0] == -1){
             o_wins = true;
             System.out.println("O wins");
+            O_WINS = true;
             return true;
         }
-//
-//        if(x_wins) System.out.println("X wins");
-//        else if(o_wins) System.out.println("O wins");
-//        else if(total_moves != 9) System.out.println("Game not finished");
-//        else System.out.println("Draw");
 
         if(total_moves == 9){
             System.out.println("Draw");
+            DRAW = true;
             return true;
         }
 
         return false;
+    }
+
+    private static int analyzeWinner(int[][] arr) {
+
+        int total_moves=0;
+
+        for(int[] x: arr){
+            for(int y: x){
+                if(y!=0) total_moves++;
+            }
+        }
+
+        if(arr[0][0] == 1 && arr[0][1] == 1 && arr[0][2] == 1){
+            return 1;
+        }
+        if(arr[0][0] == -1 && arr[0][1] == -1 && arr[0][2] == -1){
+            return -1;
+        }
+        if(arr[1][0] == 1 && arr[1][1] == 1 && arr[1][2] == 1){
+            return 1;
+        }
+        if(arr[1][0] == -1 && arr[1][1] == -1 && arr[1][2] == -1){
+            return -1;
+        }
+        if(arr[2][0] == 1 && arr[2][1] == 1 && arr[2][2] == 1){
+            return 1;
+        }
+        if(arr[2][0] == -1 && arr[2][1] == -1 && arr[2][2] == -1){
+            return -1;
+        }
+        if(arr[0][0] == 1 && arr[1][0] == 1 && arr[2][0] == 1){
+            return 1;
+        }
+        if(arr[0][0] == -1 && arr[1][0] == -1 && arr[2][0] == -1){
+            return -1;
+        }
+        if(arr[0][1] == 1 && arr[1][1] == 1 && arr[2][1] == 1){
+            return 1;
+        }
+        if(arr[0][1] == -1 && arr[1][1] == -1 && arr[2][1] == -1){
+            return -1;
+        }
+        if(arr[0][2] == 1 && arr[1][2] == 1 && arr[2][2] == 1){
+            return 1;
+        }
+        if(arr[0][2] == -1 && arr[1][2] == -1 && arr[2][2] == -1){
+            return -1;
+        }
+        if(arr[0][0] == 1 && arr[1][1] == 1 && arr[2][2] == 1){
+            return 1;
+        }
+        if(arr[0][0] == -1 && arr[1][1] == -1 && arr[2][2] == -1){
+            return -1;
+        }
+        if(arr[0][2] == 1 && arr[1][1] == 1 && arr[2][0] == 1){
+            return 1;
+        }
+        if(arr[0][2] == -1 && arr[1][1] == -1 && arr[2][0] == -1){
+            return -1;
+        }
+
+        if(total_moves == 9){
+            return 0;
+        }
+
+        return 2;
     }
 }
