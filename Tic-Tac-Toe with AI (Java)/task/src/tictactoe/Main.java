@@ -31,8 +31,75 @@ public class Main {
             playUserUser(board, sc);
         }else if(command == Constants.START_USER_EASY){
             playUserEasy(board, sc);
+        }else if(command == Constants.START_USER_MEDIUM){
+            playUserMedium(board, sc);
+        }else if(command == Constants.START_MEDIUM_USER){
+            playMediumUser(board, sc);
+        }else if(command == Constants.START_EASY_MEDIUM){
+            playEasyMedium(board, sc);
         }else if(command == 0)return;
 
+    }
+
+    private static void playUserMedium(int[][] board, Scanner sc) {
+        boolean b = false;
+        while(!b){
+
+            if(move == 0){
+                System.out.println("Enter the coordinates:");
+                takeUserInput(sc, board);
+                move = 1-move;
+            }else{
+                System.out.println("Making move level \"medium\"");
+                takeComputerMediumInput(board, move);
+                move = 1-move;
+            }
+
+            show_current_board_status(board);
+
+            b = checkWinner(board);
+        }
+    }
+
+    private static void playMediumUser(int[][] board, Scanner sc) {
+
+        boolean b = false;
+        while(!b){
+
+            if(move == 0){
+                System.out.println("Making move level \"medium\"");
+                takeComputerMediumInput(board, move);
+                move = 1-move;
+            }else{
+                System.out.println("Enter the coordinates:");
+                takeUserInput(sc, board);
+                move = 1-move;
+            }
+
+            show_current_board_status(board);
+
+            b = checkWinner(board);
+        }
+    }
+
+    private static void playEasyMedium(int[][] board, Scanner sc) {
+        boolean b = false;
+        while(!b){
+
+            if(move == 0){
+                System.out.println("Making move level \"easy\"");
+                takeComputerEasyInput(board, move);
+                move = 1-move;
+            }else{
+                System.out.println("Making move level \"medium\"");
+                takeComputerMediumInput(board, move);
+                move = 1-move;
+            }
+
+            show_current_board_status(board);
+
+            b = checkWinner(board);
+        }
     }
 
     private static int takeInputCommand(Scanner sc) {
@@ -79,11 +146,15 @@ public class Main {
         }
 
         if(player1.equals("easy")){
-            if(player2.equals("user"))return Constants.START_EASY_USER;
-            else if(player2.equals("easy"))return Constants.START_EASY_EASY;
+            if(player2.equals("user")) return Constants.START_EASY_USER;
+            else if(player2.equals("easy")) return Constants.START_EASY_EASY;
+            else if(player2.equals("medium")) return Constants.START_EASY_MEDIUM;
         }else if(player1.equals("user")){
-            if(player2.equals("user"))return Constants.START_USER_USER;
-            else if(player2.equals("easy"))return Constants.START_USER_EASY;
+            if(player2.equals("user")) return Constants.START_USER_USER;
+            else if(player2.equals("easy")) return Constants.START_USER_EASY;
+            else if(player2.equals("medium")) return Constants.START_USER_MEDIUM;
+        }else if(player1.equals("medium")){
+            if(player2.equals("user")) return Constants.START_MEDIUM_USER;
         }
 
         return 0;
@@ -100,7 +171,7 @@ public class Main {
                 move = 1-move;
             }else{
                 System.out.println("Making move level \"easy\"");
-                takeComputerInput(board, move);
+                takeComputerEasyInput(board, move);
                 move = 1-move;
             }
 
@@ -117,11 +188,11 @@ public class Main {
 
             if(move == 0){
                 System.out.println("Making move level \"easy\"");
-                takeComputerInput(board, move);
+                takeComputerEasyInput(board, move);
                 move = 1-move;
             }else{
                 System.out.println("Making move level \"easy\"");
-                takeComputerInput(board, move);
+                takeComputerEasyInput(board, move);
                 move = 1-move;
             }
 
@@ -139,7 +210,7 @@ public class Main {
 
             if(move == 0){
                 System.out.println("Making move level \"easy\"");
-                takeComputerInput(board, move);
+                takeComputerEasyInput(board, move);
                 move = 1-move;
             }else{
                 System.out.print("Enter the coordinates:");
@@ -174,7 +245,7 @@ public class Main {
 
     }
 
-    private static void takeComputerInput(int[][] board, int move) {
+    private static void takeComputerEasyInput(int[][] board, int move) {
 
         Random r = new Random();
 
@@ -193,6 +264,531 @@ public class Main {
             }
         }
 
+    }
+
+    private static void takeComputerMediumInput(int[][] board, int move) {
+
+        int computer_x_coordinate = -1;
+        int computer_y_coordinate = -1;
+        Random r = new Random();
+
+        int[] check = checkMediumMoves(board, computer_x_coordinate, computer_y_coordinate, move);
+
+        if(check[0] != -1 && check[1] != -1){
+            computer_x_coordinate = check[0];
+            computer_y_coordinate = check[1];
+            if(move == 0)
+                board[computer_x_coordinate][computer_y_coordinate] = 1;
+            else board[computer_x_coordinate][computer_y_coordinate] = -1;
+        }else{
+            while(true){
+
+                computer_x_coordinate = r.nextInt(3) + 1;
+                computer_y_coordinate = r.nextInt(3) + 1;
+
+                if(board[computer_x_coordinate-1][computer_y_coordinate-1] != 0){
+                    continue;
+                }else{
+                    if(move == 0)
+                        board[computer_x_coordinate-1][computer_y_coordinate-1] = 1;
+                    else board[computer_x_coordinate-1][computer_y_coordinate-1] = -1;
+                    break;
+                }
+            }
+        }
+
+    }
+
+    private static int[] checkMediumMoves(int[][] arr, int x_coordinate, int y_coordinate, int move) {
+
+        x_coordinate = -1;
+        y_coordinate = -1;
+
+        if(move == 0){
+            if((arr[0][0] == 1 && arr[0][1] == 1) || (arr[0][1] == 1 && arr[0][2] == 1) || (arr[0][0] == 1 && arr[0][2] == 1)){
+                if(arr[0][0] == 1 && arr[0][1] == 1){
+                    x_coordinate = 0;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[0][1] == 1 && arr[0][2] == 1){
+                    x_coordinate = 0;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 0;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[1][0] == 1 && arr[1][1] == 1) || (arr[1][1] == 1 && arr[1][2] == 1) || (arr[1][0] == 1 && arr[1][2] == 1)){
+                if(arr[1][0] == 1 && arr[1][1] == 1){
+                    x_coordinate = 1;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == 1 && arr[1][2] == 1){
+                    x_coordinate = 1;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[2][0] == 1 && arr[2][1] == 1) || (arr[2][1] == 1 && arr[2][2] == 1) || (arr[2][0] == 1 && arr[2][2] == 1)){
+                if(arr[2][0] == 1 && arr[2][1] == 1){
+                    x_coordinate = 2;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[2][1] == 1 && arr[2][2] == 1){
+                    x_coordinate = 2;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 2;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][0] == 1 && arr[1][0] == 1) || (arr[1][0] == 1 && arr[2][0] == 1) || (arr[0][0] == 1 && arr[2][0] == 1)){
+                if(arr[0][0] == 1 && arr[1][0] == 1){
+                    x_coordinate = 2;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][0] == 1 && arr[2][0] == 1){
+                    x_coordinate = 0;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][1] == 1 && arr[1][1] == 1) || (arr[1][1] == 1 && arr[2][1] == 1) || (arr[2][1] == 1 && arr[0][1] == 1)){
+                if(arr[0][1] == 1 && arr[1][1] == 1){
+                    x_coordinate = 2;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == 1 && arr[2][1] == 1){
+                    x_coordinate = 0;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][2] == 1 && arr[1][2] == 1) || (arr[1][2] == 1 && arr[2][2] == 1) || (arr[2][2] == 1 && arr[0][2] == 1)){
+                if(arr[0][2] == 1 && arr[1][2] == 1){
+                    x_coordinate = 2;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][2] == 1 && arr[2][2] == 1){
+                    x_coordinate = 0;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][0] == 1 && arr[1][1] == 1) || (arr[1][1] == 1 && arr[2][2] == 1) || (arr[2][2] == 1 && arr[0][0] == 1)){
+                if(arr[0][0] == 1 && arr[1][1] == 1){
+                    x_coordinate = 2;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == 1 && arr[2][2] == 1){
+                    x_coordinate = 0;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][2] == 1 && arr[1][1] == 1) || (arr[1][1] == 1 && arr[2][0] == 1) || (arr[2][0] == 1 && arr[0][2] == 1)){
+                if(arr[0][2] == 1 && arr[1][1] == 1){
+                    x_coordinate = 2;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == 1 && arr[2][0] == 1){
+                    x_coordinate = 0;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][0] == -1 && arr[0][1] == -1) || (arr[0][1] == -1 && arr[0][2] == -1) || (arr[0][0] == -1 && arr[0][2] == -1)){
+                if(arr[0][0] ==-1 && arr[0][1] == -1){
+                    x_coordinate = 0;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[0][1] == -1 && arr[0][2] == -1){
+                    x_coordinate = 0;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 0;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[1][0] == -1 && arr[1][1] == -1) || (arr[1][1] == -1 && arr[1][2] == -1) || (arr[1][0] == -1 && arr[1][2] == -1)){
+                if(arr[1][0] == -1 && arr[1][1] == -1){
+                    x_coordinate = 1;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == -1 && arr[1][2] == -1){
+                    x_coordinate = 1;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[2][0] == -1 && arr[2][1] == -1) || (arr[2][1] == -1 && arr[2][2] == -1) || (arr[2][0] == -1 && arr[2][2] == -1)){
+                if(arr[2][0] == -1 && arr[2][1] == -1){
+                    x_coordinate = 2;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[2][1] == -1 && arr[2][2] == -1){
+                    x_coordinate = 2;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 2;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][0] == -1 && arr[1][0] == -1) || (arr[1][0] == -1 && arr[2][0] == -1) || (arr[0][0] == -1 && arr[2][0] == -1)){
+                if(arr[0][0] == -1 && arr[1][0] == -1){
+                    x_coordinate = 2;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][0] == -1 && arr[2][0] == -1){
+                    x_coordinate = 0;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][1] == -1 && arr[1][1] == -1) || (arr[1][1] == -1 && arr[2][1] == -1) || (arr[2][1] == -1 && arr[0][1] == -1)){
+                if(arr[0][1] == -1 && arr[1][1] == -1){
+                    x_coordinate = 2;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == -1 && arr[2][1] == -1){
+                    x_coordinate = 0;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][2] == -1 && arr[1][2] == -1) || (arr[1][2] == -1 && arr[2][2] == -1) || (arr[2][2] == -1 && arr[0][2] == -1)){
+                if(arr[0][2] == -1 && arr[1][2] == -1){
+                    x_coordinate = 2;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][2] == -1 && arr[2][2] == -1){
+                    x_coordinate = 0;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][0] == -1 && arr[1][1] == -1) || (arr[1][1] == -1 && arr[2][2] == -1) || (arr[2][2] == -1 && arr[0][0] == -1)){
+                if(arr[0][0] == -1 && arr[1][1] == -1){
+                    x_coordinate = 2;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == -1 && arr[2][2] == -1){
+                    x_coordinate = 0;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][2] == -1 && arr[1][1] == -1) || (arr[1][1] == -1 && arr[2][0] == -1) || (arr[2][0] == -1 && arr[0][2] == -1)){
+                if(arr[0][2] == -1 && arr[1][1] == -1){
+                    x_coordinate = 2;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == -1 && arr[2][0] == -1){
+                    x_coordinate = 0;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+
+        }else{
+            if((arr[0][0] == -1 && arr[0][1] == -1) || (arr[0][1] == -1 && arr[0][2] == -1) || (arr[0][0] == -1 && arr[0][2] == -1)){
+                if(arr[0][0] ==-1 && arr[0][1] == -1){
+                    x_coordinate = 0;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[0][1] == -1 && arr[0][2] == -1){
+                    x_coordinate = 0;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 0;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[1][0] == -1 && arr[1][1] == -1) || (arr[1][1] == -1 && arr[1][2] == -1) || (arr[1][0] == -1 && arr[1][2] == -1)){
+                if(arr[1][0] == -1 && arr[1][1] == -1){
+                    x_coordinate = 1;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == -1 && arr[1][2] == -1){
+                    x_coordinate = 1;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[2][0] == -1 && arr[2][1] == -1) || (arr[2][1] == -1 && arr[2][2] == -1) || (arr[2][0] == -1 && arr[2][2] == -1)){
+                if(arr[2][0] == -1 && arr[2][1] == -1){
+                    x_coordinate = 2;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[2][1] == -1 && arr[2][2] == -1){
+                    x_coordinate = 2;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 2;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][0] == -1 && arr[1][0] == -1) || (arr[1][0] == -1 && arr[2][0] == -1) || (arr[0][0] == -1 && arr[2][0] == -1)){
+                if(arr[0][0] == -1 && arr[1][0] == -1){
+                    x_coordinate = 2;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][0] == -1 && arr[2][0] == -1){
+                    x_coordinate = 0;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][1] == -1 && arr[1][1] == -1) || (arr[1][1] == -1 && arr[2][1] == -1) || (arr[2][1] == -1 && arr[0][1] == -1)){
+                if(arr[0][1] == -1 && arr[1][1] == -1){
+                    x_coordinate = 2;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == -1 && arr[2][1] == -1){
+                    x_coordinate = 0;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][2] == -1 && arr[1][2] == -1) || (arr[1][2] == -1 && arr[2][2] == -1) || (arr[2][2] == -1 && arr[0][2] == -1)){
+                if(arr[0][2] == -1 && arr[1][2] == -1){
+                    x_coordinate = 2;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][2] == -1 && arr[2][2] == -1){
+                    x_coordinate = 0;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][0] == -1 && arr[1][1] == -1) || (arr[1][1] == -1 && arr[2][2] == -1) || (arr[2][2] == -1 && arr[0][0] == -1)){
+                if(arr[0][0] == -1 && arr[1][1] == -1){
+                    x_coordinate = 2;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == -1 && arr[2][2] == -1){
+                    x_coordinate = 0;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][2] == -1 && arr[1][1] == -1) || (arr[1][1] == -1 && arr[2][0] == -1) || (arr[2][0] == -1 && arr[0][2] == -1)){
+                if(arr[0][2] == -1 && arr[1][1] == -1){
+                    x_coordinate = 2;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == -1 && arr[2][0] == -1){
+                    x_coordinate = 0;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][0] == 1 && arr[0][1] == 1) || (arr[0][1] == 1 && arr[0][2] == 1) || (arr[0][0] == 1 && arr[0][2] == 1)){
+                if(arr[0][0] == 1 && arr[0][1] == 1){
+                    x_coordinate = 0;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[0][1] == 1 && arr[0][2] == 1){
+                    x_coordinate = 0;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 0;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[1][0] == 1 && arr[1][1] == 1) || (arr[1][1] == 1 && arr[1][2] == 1) || (arr[1][0] == 1 && arr[1][2] == 1)){
+                if(arr[1][0] == 1 && arr[1][1] == 1){
+                    x_coordinate = 1;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == 1 && arr[1][2] == 1){
+                    x_coordinate = 1;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[2][0] == 1 && arr[2][1] == 1) || (arr[2][1] == 1 && arr[2][2] == 1) || (arr[2][0] == 1 && arr[2][2] == 1)){
+                if(arr[2][0] == 1 && arr[2][1] == 1){
+                    x_coordinate = 2;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[2][1] == 1 && arr[2][2] == 1){
+                    x_coordinate = 2;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 2;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][0] == 1 && arr[1][0] == 1) || (arr[1][0] == 1 && arr[2][0] == 1) || (arr[0][0] == 1 && arr[2][0] == 1)){
+                if(arr[0][0] == 1 && arr[1][0] == 1){
+                    x_coordinate = 2;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][0] == 1 && arr[2][0] == 1){
+                    x_coordinate = 0;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][1] == 1 && arr[1][1] == 1) || (arr[1][1] == 1 && arr[2][1] == 1) || (arr[2][1] == 1 && arr[0][1] == 1)){
+                if(arr[0][1] == 1 && arr[1][1] == 1){
+                    x_coordinate = 2;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == 1 && arr[2][1] == 1){
+                    x_coordinate = 0;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][2] == 1 && arr[1][2] == 1) || (arr[1][2] == 1 && arr[2][2] == 1) || (arr[2][2] == 1 && arr[0][2] == 1)){
+                if(arr[0][2] == 1 && arr[1][2] == 1){
+                    x_coordinate = 2;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][2] == 1 && arr[2][2] == 1){
+                    x_coordinate = 0;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][0] == 1 && arr[1][1] == 1) || (arr[1][1] == 1 && arr[2][2] == 1) || (arr[2][2] == 1 && arr[0][0] == 1)){
+                if(arr[0][0] == 1 && arr[1][1] == 1){
+                    x_coordinate = 2;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == 1 && arr[2][2] == 1){
+                    x_coordinate = 0;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+            if((arr[0][2] == 1 && arr[1][1] == 1) || (arr[1][1] == 1 && arr[2][0] == 1) || (arr[2][0] == 1 && arr[0][2] == 1)){
+                if(arr[0][2] == 1 && arr[1][1] == 1){
+                    x_coordinate = 2;
+                    y_coordinate = 0;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else if(arr[1][1] == 1 && arr[2][0] == 1){
+                    x_coordinate = 0;
+                    y_coordinate = 2;
+                    return new int[]{x_coordinate, y_coordinate};
+                }else{
+                    x_coordinate = 1;
+                    y_coordinate = 1;
+                    return new int[]{x_coordinate, y_coordinate};
+                }
+            }
+        }
+        return new int[] {-1, -1};
     }
 
     private static void takeUserInput(Scanner sc, int[][] board) {
