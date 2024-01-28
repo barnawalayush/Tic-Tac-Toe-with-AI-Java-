@@ -10,7 +10,7 @@ public final class Constants {
     final static public int START_MEDIUM_USER = 6;
     final static public int START_EASY_MEDIUM = 7;
     final static public int START_HARD_USER = 8;
-    final static public int START_USER_HARD = 8;
-    final static public int START_HARD_HARD = 9;
+    final static public int START_USER_HARD = 9;
+    final static public int START_HARD_HARD = 10;
 
 }
