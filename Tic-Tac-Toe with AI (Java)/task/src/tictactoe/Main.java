@@ -24,7 +24,7 @@ public class Main {
 
         update_array(board, str);
 
-        if(command != Constants.START_USER_HARD && command != Constants.START_HARD_USER && command != Constants.START_HARD_HARD) show_current_board_status(board);
+        if(command != Constants.START_HARD_USER && command != Constants.START_HARD_HARD) show_current_board_status(board);
 
         if(command == Constants.START_EASY_EASY){
             playEayEasy(board, sc);
@@ -47,7 +47,6 @@ public class Main {
         }else if(command == Constants.START_HARD_HARD){
             playHardHard(board, sc);
         }else if(command == 0)return;
-
     }
 
     private static void playUserHard(int[][] board, Scanner sc) {
@@ -400,7 +399,7 @@ public class Main {
                 continue;
             }else{
                 if(move == 0)
-                board[computer_x_coordinate-1][computer_y_coordinate-1] = 1;
+                    board[computer_x_coordinate-1][computer_y_coordinate-1] = 1;
                 else board[computer_x_coordinate-1][computer_y_coordinate-1] = -1;
                 break;
             }
