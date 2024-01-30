@@ -7,25 +7,28 @@ import java.util.Scanner;
 
 public class Main {
 
-    private static int move = 0;  // move == 0 --> X turn;   move == 1 --> O turn;
-    private static boolean X_WINS = false;
-    private static boolean O_WINS = false;
-    private static boolean DRAW = false;
+    private static int move = 0;  // move == 0 --> X turn;   move == 1 --> O turn
+    private static boolean X_WINS = false;   // if X wins then it become true
+    private static boolean O_WINS = false;   // if O wins then it become true
+    private static boolean DRAW = false;     // if none wins
 
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
         System.out.print("Input command:");
 
+        //taking input command
         int command = takeInputCommand(sc);
 
         String str = "_________";
         int[][] board = new int[3][3];
 
+        // for 'X' update value=1, for 'O' update value=-1 and for vacant places  update value=0;
         update_array(board, str);
 
         if(command != Constants.START_HARD_USER && command != Constants.START_HARD_HARD) show_current_board_status(board);
 
+        // Calling function according to input commands
         if(command == Constants.START_EASY_EASY){
             playEayEasy(board, sc);
         }else if(command == Constants.START_EASY_USER){
@@ -49,10 +52,13 @@ public class Main {
         }else if(command == 0)return;
     }
 
+
+
+    // if programmer given input command as "start user hard" then this function going to implement   player1 = User and player2 = Computer playing at hard level
     private static void playUserHard(int[][] board, Scanner sc) {
 
-        boolean b = false;
-        while(!b){
+        int check = 2;
+        while(check==2){
 
             if(move == 0){
                 System.out.print("Enter the coordinates:");
@@ -66,79 +72,18 @@ public class Main {
 
             show_current_board_status(board);
 
-            b = checkWinner(board);
+            check = checkWinner(board);
+            if(check == 0) System.out.println("Draw");
+            else if(check == 1)System.out.println("X wins");
+            else if(check == -1)System.out.println("O wins");
         }
     }
 
-    private static void takeComputerHardInput(int[][] board, int turn) {
-
-        int bestScore = Integer.MIN_VALUE;
-        int[] moves = new int[2];
-        for(int i=0; i<3; i++){
-            for(int j=0; j<3; j++){
-                if(board[i][j] == 0){
-                    board[i][j] = turn==0?1:-1;
-                    int score = minimax(board, 0, false, 1-turn);
-                    board[i][j] = 0;
-                    if(score > bestScore){
-                        bestScore = score;
-                        moves = new int[] {i, j};
-                    }
-                }
-            }
-        }
-        board[moves[0]][moves[1]] = turn==0?1:-1;
-    }
-
-    private static int minimax(int[][] board, int depth, boolean isMaximising, int turn) {
-        int result = analyzeWinner(board);
-        if(result == 1){
-            if(move == 0){
-                return 1;
-            }else return -1;
-        }else if(result == -1){
-            if(move == 0){
-                return -1;
-            }else return 1;
-        }else if(result == 0)return 0;
-
-        if(isMaximising){
-            int bestScore = Integer.MIN_VALUE;
-            for(int i=0; i<3; i++){
-                for(int j=0; j<3; j++){
-                    if(board[i][j] == 0){
-                        board[i][j] = turn==0?1:-1;
-                        int score = minimax(board, depth+1, false, 1-turn);
-                        board[i][j] = 0;
-                        if(score > bestScore){
-                            bestScore = score;
-                        }
-                    }
-                }
-            }
-            return bestScore;
-        }else{
-            int bestScore = Integer.MAX_VALUE;
-            for(int i=0; i<3; i++){
-                for(int j=0; j<3; j++){
-                    if(board[i][j] == 0){
-                        board[i][j] = turn==0?1:-1;
-                        int score = minimax(board, depth+1, true, 1-turn);
-                        board[i][j] = 0;
-                        if(score < bestScore){
-                            bestScore = score;
-                        }
-                    }
-                }
-            }
-            return bestScore;
-        }
-    }
-
+    // if programmer given input command as "start hard user" then this function going to implement   player1 = Computer playing at hard level and player2 = User
     private static void playHardUser(int[][] board, Scanner sc) {
 
-        boolean b = false;
-        while(!b){
+        int check = 2;
+        while(check==2){
 
             if(move == 0){
                 System.out.println("Making move level \"hard\"");
@@ -153,14 +98,18 @@ public class Main {
 
             show_current_board_status(board);
 
-            b = checkWinner(board);
+            check = checkWinner(board);
+            if(check == 0) System.out.println("Draw");
+            else if(check == 1)System.out.println("X wins");
+            else if(check == -1)System.out.println("O wins");
         }
     }
 
+    // if programmer given input command as "start hard hard" then this function going to implement   player1 = Computer playing at hard level and player2 = Computer playing at hard level
     private static void playHardHard(int[][] board, Scanner sc) {
 
-        boolean b = false;
-        while(!b){
+        int check = 2;
+        while(check==2){
 
             if(move == 0){
                 System.out.println("Making move level \"hard\"");
@@ -174,14 +123,18 @@ public class Main {
 
             show_current_board_status(board);
 
-            b = checkWinner(board);
+            check = checkWinner(board);
+            if(check == 0) System.out.println("Draw");
+            else if(check == 1)System.out.println("X wins");
+            else if(check == -1)System.out.println("O wins");
         }
     }
 
+    // if programmer given input command as "start easy user" then this function going to implement   player1 = Computer playing at easy level and player2 = User
     private static void playEasyUser(int[][] board, Scanner sc) {
 
-        boolean b = false;
-        while(!b){
+        int check=2;
+        while(check==2){
 
             if(move == 0){
                 System.out.println("Making move level \"easy\"");
@@ -195,13 +148,18 @@ public class Main {
 
             show_current_board_status(board);
 
-            b = checkWinner(board);
+            check = checkWinner(board);
+            if(check == 0) System.out.println("Draw");
+            else if(check == 1)System.out.println("X wins");
+            else if(check == -1)System.out.println("O wins");
         }
     }
 
+    // if programmer given input command as "start user medium" then this function going to implement  player1 = User and player2 = Computer playing at medium level
     private static void playUserMedium(int[][] board, Scanner sc) {
-        boolean b = false;
-        while(!b){
+
+        int check=2;
+        while(check==2){
 
             if(move == 0){
                 System.out.println("Enter the coordinates:");
@@ -215,14 +173,18 @@ public class Main {
 
             show_current_board_status(board);
 
-            b = checkWinner(board);
+            check = checkWinner(board);
+            if(check == 0) System.out.println("Draw");
+            else if(check == 1)System.out.println("X wins");
+            else if(check == -1)System.out.println("O wins");
         }
     }
 
+    // if programmer given input command as "start medium user" then this function going to implement  player1 = Computer playing at medium level and player2 = User
     private static void playMediumUser(int[][] board, Scanner sc) {
 
-        boolean b = false;
-        while(!b){
+        int check=2;
+        while(check==2){
 
             if(move == 0){
                 System.out.println("Making move level \"medium\"");
@@ -236,13 +198,18 @@ public class Main {
 
             show_current_board_status(board);
 
-            b = checkWinner(board);
+            check = checkWinner(board);
+            if(check == 0) System.out.println("Draw");
+            else if(check == 1)System.out.println("X wins");
+            else if(check == -1)System.out.println("O wins");
         }
     }
 
+    // if programmer given input command as "start easy medium" then this function going to implement  player1 = Computer playing at easy level and player2 = Computer playing at medium level
     private static void playEasyMedium(int[][] board, Scanner sc) {
-        boolean b = false;
-        while(!b){
+
+        int check=2;
+        while(check==2){
 
             if(move == 0){
                 System.out.println("Making move level \"easy\"");
@@ -256,10 +223,94 @@ public class Main {
 
             show_current_board_status(board);
 
-            b = checkWinner(board);
+            check = checkWinner(board);
+            if(check == 0) System.out.println("Draw");
+            else if(check == 1)System.out.println("X wins");
+            else if(check == -1)System.out.println("O wins");
         }
     }
 
+    // if programmer given input command as "start user easy" then this function going to implement  player1 = User and player2 = Computer playing at easy level
+    private static void playUserEasy(int[][] board, Scanner sc) {
+
+        int check=2;
+        while(check==2){
+
+            if(move == 0){
+                System.out.print("Enter the coordinates:");
+                takeUserInput(sc, board);
+                move = 1-move;
+            }else{
+                System.out.println("Making move level \"easy\"");
+                takeComputerEasyInput(board, move);
+                move = 1-move;
+            }
+
+            show_current_board_status(board);
+
+            check = checkWinner(board);
+            if(check == 0) System.out.println("Draw");
+            else if(check == 1)System.out.println("X wins");
+            else if(check == -1)System.out.println("O wins");
+        }
+    }
+
+    // if programmer given input command as "start easy easy" then this function going to implement  player1 = Computer playing at easy level and player2 = Computer playing at easy level
+    private static void playEayEasy(int[][] board, Scanner sc) {
+
+        int check=2;
+        while(check==2){
+
+            if(move == 0){
+                System.out.println("Making move level \"easy\"");
+                takeComputerEasyInput(board, move);
+                move = 1-move;
+            }else{
+                System.out.println("Making move level \"easy\"");
+                takeComputerEasyInput(board, move);
+                move = 1-move;
+            }
+
+            show_current_board_status(board);
+
+            check = checkWinner(board);
+            if(check == 0) System.out.println("Draw");
+            else if(check == 1)System.out.println("X wins");
+            else if(check == -1)System.out.println("O wins");
+        }
+
+    }
+
+    // if programmer given input command as "start user user" then this function going to implement  player1 = User and player2 = User
+    private static void playUserUser(int[][] board, Scanner sc) {
+
+        int check=2;
+        while(check==2){
+
+            if(move == 0){
+                System.out.print("Enter the coordinates:");
+                takeUserInput(sc, board);
+                move = 1-move;
+            }else{
+                System.out.print("Enter the coordinates:");
+                takeUserInput(sc, board);
+                move = 1-move;
+            }
+
+            show_current_board_status(board);
+
+            check = checkWinner(board);
+            if(check == 0) System.out.println("Draw");
+            else if(check == 1)System.out.println("X wins");
+            else if(check == -1)System.out.println("O wins");
+        }
+
+    }
+
+
+
+
+    // It analyzes whether command user input is correct and if it is so then return constant accordingly
     private static int takeInputCommand(Scanner sc) {
 
         String player1 = null, player2 = null;
@@ -323,69 +374,145 @@ public class Main {
 
     }
 
-    private static void playUserEasy(int[][] board, Scanner sc) {
-        boolean b = false;
-        while(!b){
+    // It checks whether coordinate input by user is correct or not (i.e: between 1 and 3 or not Eg: 1 3 )
+    private static void takeUserInput(Scanner sc, int[][] board) {
 
-            if(move == 0){
-                System.out.print("Enter the coordinates:");
-                takeUserInput(sc, board);
-                move = 1-move;
-            }else{
-                System.out.println("Making move level \"easy\"");
-                takeComputerEasyInput(board, move);
-                move = 1-move;
+        int count=0;           // To count number of input tokens
+        boolean check1 = true; // To keep the record of the entered incorrect number to avoid double printing
+        boolean check2 = true; // To keep the record of the entered incorrect word to avoid double printing
+        boolean first = true;  // To instantiate x and y coordinate correspondingly
+        int x_coordinate = -1, y_coordinate = -1;
+        boolean check=true;    // To handle the situation in which if user input like "one"
+
+        while(count != 2){
+            String str = sc.next();
+            int n = 0;
+
+            if(!check & first){
+                check2 = true;
+                check = true;
             }
 
-            show_current_board_status(board);
-
-            b = checkWinner(board);
-        }
-    }
-
-    private static void playEayEasy(int[][] board, Scanner sc) {
-
-        boolean b = false;
-        while(!b){
-
-            if(move == 0){
-                System.out.println("Making move level \"easy\"");
-                takeComputerEasyInput(board, move);
-                move = 1-move;
-            }else{
-                System.out.println("Making move level \"easy\"");
-                takeComputerEasyInput(board, move);
-                move = 1-move;
+            try{
+                n = Integer.parseInt(str);
+            }
+            catch (NumberFormatException e){
+                if(check2){
+                    System.out.println("You should enter numbers!");
+                    System.out.print("Enter the coordinates:");
+                    if(first){
+                        check = false;
+                        check2 = false;
+                    }
+                    first = true;
+                    count=0;
+                    continue;
+                }else{
+                    check = true;
+                    check2 = true;
+                    continue;
+                }
             }
 
-            show_current_board_status(board);
+            if(n<1 || n>3) {
+                if(check1){
+                    System.out.println("Coordinates should be from 1 to 3!");
+                    System.out.print("Enter the coordinates:");
+                    if(first)check1 = false;
+                    first = true;
+                    count=0;
+                    continue;
+                }else{
+                    check1 = true;
+                    continue;
+                }
 
-            b = checkWinner(board);
-        }
-
-    }
-
-    private static void playUserUser(int[][] board, Scanner sc) {
-        boolean b = false;
-        while(!b){
-
-            if(move == 0){
-                System.out.print("Enter the coordinates:");
-                takeUserInput(sc, board);
-                move = 1-move;
             }else{
-                System.out.print("Enter the coordinates:");
-                takeUserInput(sc, board);
-                move = 1-move;
+                if(check1 && check2){
+                    if(first){
+                        first=false;
+                        x_coordinate = n;
+                        count++;
+                    }else{
+                        count++;
+                        y_coordinate = n;
+                        first = true;
+                    }
+                }else{
+                    check1=true;
+                    check2 = true;
+                }
             }
 
-            show_current_board_status(board);
+            if(count==2){
+                if(board[x_coordinate-1][y_coordinate-1] != 0){
+                    //show_current_board_status(board);
+                    System.out.println("This cell is occupied! Choose another one!");
+                    //show_current_board_status(board);
+                    System.out.print("Enter the coordinates:");
+                    count=0;
+                    first = true;
+                    continue;
+                }else{
+                    break;
+                }
 
-            b = checkWinner(board);
-        }
+            }
+
+        };
+
+        if(move == 0)board[x_coordinate-1][y_coordinate-1] = 1;
+        else board[x_coordinate-1][y_coordinate-1] = -1;
 
     }
 
+    // It prints out the current status of tic-tac-toe board
+    private static void show_current_board_status(int[][] board) {
+
+        System.out.println("---------");
+        for(int i=0; i<3; i++){
+            System.out.print("| ");
+            for(int j=0; j<3; j++){
+                if(board[i][j] == 1)System.out.print("X ");
+                else if(board[i][j] == -1) System.out.print("O ");
+                else System.out.print("  ");
+            }
+            System.out.println("|");
+        }
+        System.out.println("---------");
+
+    }
+
+    // It updates the value of array according to 'X' and 'O' moves  for 'X' places 1, for 'O' places -1 and at 'vacant places' place 0
+    private static void update_array(int[][] board, String str) {
+
+        int x1=0,y1=0;
+        int no_of_x = 0, no_of_o = 0;
+
+        for(int i=0; i<str.length(); i++){
+            if(str.charAt(i) == 'X') {
+                no_of_x++;
+                board[x1][y1] = 1;
+            }else if(str.charAt(i) == 'O'){
+                no_of_o++;
+                board[x1][y1] = -1;
+            }
+            y1++;
+
+            if(i%3==2) {
+                x1++;
+                y1=0;
+                continue;
+            }
+        }
+
+        if(no_of_x > no_of_o) move = 1-move;
+    }
+
+
+
+
+    // It gets called when ask for computer to play at easier level
     private static void takeComputerEasyInput(int[][] board, int move) {
 
         Random r = new Random();
@@ -407,6 +534,7 @@ public class Main {
 
     }
 
+    // It gets called when ask for computer to play at medium level
     private static void takeComputerMediumInput(int[][] board, int move) {
 
         int computer_x_coordinate = -1;
@@ -440,6 +568,7 @@ public class Main {
 
     }
 
+    // This algo implemented to make computer play at medium level
     private static int[] checkMediumMoves(int[][] arr, int x_coordinate, int y_coordinate, int move) {
 
         x_coordinate = -1;
@@ -687,7 +816,8 @@ public class Main {
                 }
             }
 
-        }else{
+        }
+        else{
             if((arr[0][0] == -1 && arr[0][1] == -1) || (arr[0][1] == -1 && arr[0][2] == -1) || (arr[0][0] == -1 && arr[0][2] == -1)){
                 if(arr[0][0] ==-1 && arr[0][1] == -1){
                     x_coordinate = 0;
@@ -932,257 +1062,78 @@ public class Main {
         return new int[] {-1, -1};
     }
 
-    private static void takeUserInput(Scanner sc, int[][] board) {
+    // It gets called when ask for computer to play at harder level
+    private static void takeComputerHardInput(int[][] board, int turn) {
 
-        int count=0;           // To count number of input tokens
-        boolean check1 = true; // To keep the record of the entered incorrect number to avoid double printing
-        boolean check2 = true; // To keep the record of the entered incorrect word to avoid double printing
-        boolean first = true;  // To instantiate x and y coordinate correspondingly
-        int x_coordinate = -1, y_coordinate = -1;
-        boolean check=true;    // To handle the situation in which if user input like "one"
-
-        while(count != 2){
-            String str = sc.next();
-            int n = 0;
-
-            if(!check & first){
-                check2 = true;
-                check = true;
-            }
-
-            try{
-                n = Integer.parseInt(str);
-            }
-            catch (NumberFormatException e){
-                if(check2){
-                    System.out.println("You should enter numbers!");
-                    System.out.print("Enter the coordinates:");
-                    if(first){
-                        check = false;
-                        check2 = false;
-                    }
-                    first = true;
-                    count=0;
-                    continue;
-                }else{
-                    check = true;
-                    check2 = true;
-                    continue;
-                }
-            }
-
-            if(n<1 || n>3) {
-                if(check1){
-                    System.out.println("Coordinates should be from 1 to 3!");
-                    System.out.print("Enter the coordinates:");
-                    if(first)check1 = false;
-                    first = true;
-                    count=0;
-                    continue;
-                }else{
-                    check1 = true;
-                    continue;
-                }
-
-            }else{
-                if(check1 && check2){
-                    if(first){
-                        first=false;
-                        x_coordinate = n;
-                        count++;
-                    }else{
-                        count++;
-                        y_coordinate = n;
-                        first = true;
-                    }
-                }else{
-                    check1=true;
-                    check2 = true;
-                }
-            }
-
-            if(count==2){
-                if(board[x_coordinate-1][y_coordinate-1] != 0){
-                    //show_current_board_status(board);
-                    System.out.println("This cell is occupied! Choose another one!");
-                    //show_current_board_status(board);
-                    System.out.print("Enter the coordinates:");
-                    count=0;
-                    first = true;
-                    continue;
-                }else{
-                    break;
-                }
-
-            }
-
-        };
-
-        if(move == 0)board[x_coordinate-1][y_coordinate-1] = 1;
-        else board[x_coordinate-1][y_coordinate-1] = -1;
-
-    }
-
-    private static void show_current_board_status(int[][] board) {
-
-        System.out.println("---------");
+        int bestScore = Integer.MIN_VALUE;
+        int[] moves = new int[2];
         for(int i=0; i<3; i++){
-            System.out.print("| ");
             for(int j=0; j<3; j++){
-                if(board[i][j] == 1)System.out.print("X ");
-                else if(board[i][j] == -1) System.out.print("O ");
-                else System.out.print("  ");
+                if(board[i][j] == 0){
+                    board[i][j] = turn==0?1:-1;
+                    int score = minimax(board, 0, false, 1-turn);
+                    board[i][j] = 0;
+                    if(score > bestScore){
+                        bestScore = score;
+                        moves = new int[] {i, j};
+                    }
+                }
             }
-            System.out.println("|");
         }
-        System.out.println("---------");
-
+        board[moves[0]][moves[1]] = turn==0?1:-1;
     }
 
-    private static void update_array(int[][] board, String str) {
+    // This is the algo implemented to make computer play hard
+    private static int minimax(int[][] board, int depth, boolean isMaximising, int turn) {
+        int result = checkWinner(board);
+        if(result == 1){
+            if(move == 0){
+                return 1;
+            }else return -1;
+        }else if(result == -1){
+            if(move == 0){
+                return -1;
+            }else return 1;
+        }else if(result == 0)return 0;
 
-        int x1=0,y1=0;
-        int no_of_x = 0, no_of_o = 0;
-
-        for(int i=0; i<str.length(); i++){
-            if(str.charAt(i) == 'X') {
-                no_of_x++;
-                board[x1][y1] = 1;
-            }else if(str.charAt(i) == 'O'){
-                no_of_o++;
-                board[x1][y1] = -1;
+        if(isMaximising){
+            int bestScore = Integer.MIN_VALUE;
+            for(int i=0; i<3; i++){
+                for(int j=0; j<3; j++){
+                    if(board[i][j] == 0){
+                        board[i][j] = turn==0?1:-1;
+                        int score = minimax(board, depth+1, false, 1-turn);
+                        board[i][j] = 0;
+                        if(score > bestScore){
+                            bestScore = score;
+                        }
+                    }
+                }
             }
-            y1++;
-
-            if(i%3==2) {
-                x1++;
-                y1=0;
-                continue;
+            return bestScore;
+        }else{
+            int bestScore = Integer.MAX_VALUE;
+            for(int i=0; i<3; i++){
+                for(int j=0; j<3; j++){
+                    if(board[i][j] == 0){
+                        board[i][j] = turn==0?1:-1;
+                        int score = minimax(board, depth+1, true, 1-turn);
+                        board[i][j] = 0;
+                        if(score < bestScore){
+                            bestScore = score;
+                        }
+                    }
+                }
             }
+            return bestScore;
         }
-
-        if(no_of_x > no_of_o) move = 1-move;
     }
 
-    private static boolean checkWinner(int[][] arr) {
 
-        int total_moves=0;
-        boolean x_wins=false;
-        boolean o_wins = false;
 
-        for(int[] x: arr){
-            for(int y: x){
-                if(y!=0) total_moves++;
-            }
-        }
 
-        if(arr[0][0] == 1 && arr[0][1] == 1 && arr[0][2] == 1){
-            x_wins = true;
-            System.out.println("X wins");
-            X_WINS = true;
-            return true;
-        }
-        if(arr[0][0] == -1 && arr[0][1] == -1 && arr[0][2] == -1){
-            o_wins = true;
-            System.out.println("O wins");
-            O_WINS = true;
-            return true;
-        }
-        if(arr[1][0] == 1 && arr[1][1] == 1 && arr[1][2] == 1){
-            x_wins = true;
-            System.out.println("X wins");
-            X_WINS = true;
-            return true;
-        }
-        if(arr[1][0] == -1 && arr[1][1] == -1 && arr[1][2] == -1){
-            o_wins = true;
-            System.out.println("O wins");
-            O_WINS = true;
-            return true;
-        }
-        if(arr[2][0] == 1 && arr[2][1] == 1 && arr[2][2] == 1){
-            x_wins = true;
-            System.out.println("X wins");
-            X_WINS = true;
-            return true;
-        }
-        if(arr[2][0] == -1 && arr[2][1] == -1 && arr[2][2] == -1){
-            o_wins = true;
-            System.out.println("O wins");
-            O_WINS = true;
-            return true;
-        }
-        if(arr[0][0] == 1 && arr[1][0] == 1 && arr[2][0] == 1){
-            x_wins = true;
-            System.out.println("X wins");
-            X_WINS = true;
-            return true;
-        }
-        if(arr[0][0] == -1 && arr[1][0] == -1 && arr[2][0] == -1){
-            o_wins = true;
-            System.out.println("O wins");
-            O_WINS = true;
-            return true;
-        }
-        if(arr[0][1] == 1 && arr[1][1] == 1 && arr[2][1] == 1){
-            x_wins = true;
-            System.out.println("X wins");
-            X_WINS = true;
-            return true;
-        }
-        if(arr[0][1] == -1 && arr[1][1] == -1 && arr[2][1] == -1){
-            o_wins = true;
-            System.out.println("O wins");
-            O_WINS = true;
-            return true;
-        }
-        if(arr[0][2] == 1 && arr[1][2] == 1 && arr[2][2] == 1){
-            x_wins = true;
-            System.out.println("X wins");
-            X_WINS = true;
-            return true;
-        }
-        if(arr[0][2] == -1 && arr[1][2] == -1 && arr[2][2] == -1){
-            o_wins = true;
-            System.out.println("O wins");
-            O_WINS = true;
-            return true;
-        }
-        if(arr[0][0] == 1 && arr[1][1] == 1 && arr[2][2] == 1){
-            x_wins = true;
-            System.out.println("X wins");
-            X_WINS = true;
-            return true;
-        }
-        if(arr[0][0] == -1 && arr[1][1] == -1 && arr[2][2] == -1){
-            o_wins = true;
-            System.out.println("O wins");
-            O_WINS = true;
-            return true;
-        }
-        if(arr[0][2] == 1 && arr[1][1] == 1 && arr[2][0] == 1){
-            x_wins = true;
-            System.out.println("X wins");
-            X_WINS = true;
-            return true;
-        }
-        if(arr[0][2] == -1 && arr[1][1] == -1 && arr[2][0] == -1){
-            o_wins = true;
-            System.out.println("O wins");
-            O_WINS = true;
-            return true;
-        }
-
-        if(total_moves == 9){
-            System.out.println("Draw");
-            DRAW = true;
-            return true;
-        }
-
-        return false;
-    }
-
-    private static int analyzeWinner(int[][] arr) {
+    // This is called to check what player wins, whether 'X' wins or 'O'
+    private static int checkWinner(int[][] arr) {
 
         int total_moves=0;
 
